@@ -3,13 +3,13 @@
 module.exports = {
   title: 'Rapport de stage',
   tagline: 'BUT Info 2A – MAAF Covéa',
-  url: 'https://darcodemonpote.github.io',  // Ton URL GitHub Pages (pseudo.github.io)
+    url: 'https://rapportstageclementb.github.io',  // Ton URL GitHub Pages (pseudo.github.io)
   baseUrl: '/rapportstage/',                 // Le nom du repo avec un slash final
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
     favicon: 'img/lr.ico',
-  organizationName: 'Darcodemonpote',        // Ton pseudo GitHub
-  projectName: 'rapportstage',                // Nom exact du repo GitHub
+    organizationName: 'clementbreau',
+    projectName: 'rapportstage',
 
   presets: [
     [

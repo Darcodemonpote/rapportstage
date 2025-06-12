@@ -11,7 +11,7 @@ const sidebars = {
     {
       type: 'doc',
       id: 'entreprise',
-      label: 'La MAAF et le contexte de stage',
+        label: 'Covéa et le contexte de stage',
     },
     {
       type: 'doc',
