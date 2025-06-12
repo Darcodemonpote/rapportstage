@@ -8,9 +8,9 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === 'lestournesolsVG') {  // change 'monmdp' par ton mot de passe
+    if (password === 'lestournesolsVG') {
       localStorage.setItem('auth', 'true');
-      window.location.href = baseUrl;  // redirige vers la page d'accueil
+      window.location.href = baseUrl;
     } else {
       setError('Mauvais mot de passe');
     }

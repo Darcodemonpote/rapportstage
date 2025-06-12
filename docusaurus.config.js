@@ -8,7 +8,7 @@ module.exports = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
     favicon: 'img/lr.ico',
-    organizationName: 'clementbreau',
+    organizationName: 'Darcodemonpote',
     projectName: 'rapportstage',
 
   presets: [
