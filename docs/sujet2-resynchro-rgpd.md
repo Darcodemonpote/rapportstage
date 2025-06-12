@@ -38,7 +38,6 @@ Modifier
 
 ### `/docs/sujet3-tpo2mrh.md`
 
-```markdown
 # Sujet 3 – TPO2MRH
 
 ## Contexte
