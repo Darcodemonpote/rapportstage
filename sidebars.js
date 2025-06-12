@@ -22,9 +22,9 @@ const sidebars = {
       type: 'category',
       label: 'Sujets traités',
       items: [
-        'sujet1-talend-dates',
-        'sujet2-resynchro-rgpd',
-        'sujet3-tpo2mrh',
+          'sujet1-talend-dates',
+          'sujet2-resynchro-prodauto',
+          'sujet3-resynchro-tpo2mrh',
       ],
     },
     {

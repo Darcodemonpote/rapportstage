@@ -1,45 +1,36 @@
-# Compétences du BUT Informatique mobilisées
+### Compétence 1 : Réaliser un développement d’application
 
-Durant mon stage chez MAAF (Covéa), j’ai été amené à mobiliser plusieurs compétences du BUT Informatique dans des contextes concrets. Voici comment ces compétences ont été mises en œuvre :
+**(UE2.1) :** Développer des applications informatiques simples
 
----
+> Durant mon stage, j’ai participé au développement et à la modification de jobs Talend et de jobs socle générique, ce qui m’a permis de maîtriser la conception et l’implémentation d’application de traitement des données. [Voir les différents sujets](/sujet1-talend-dates)
 
-## C1. Réaliser un développement d’application
+### Compétence 2 : Optimiser des applications
 
-Dans le cadre de la fiabilisation de la chaîne de traitement Talend, j’ai développé des requêtes SQL avancées afin d’extraire, croiser et filtrer des données sensibles. J’ai également manipulé du YAML pour configurer certains flux et automatisations.
+**(UE2.2) :** Appréhender et construire des algorithmes
 
-Lors de la mise à jour de jobs existants, j’ai dû comprendre le code Talend existant, corriger des anomalies et ajouter des tests pour garantir leur bon fonctionnement. Ces tâches m’ont permis d’exercer des compétences de développement, de lecture de code et de tests.
+> J’ai appris à analyser et optimiser des requêtes SQL complexes sur Hue, notamment pour identifier les données à resynchroniser dans le cadre des purges RGPD. Cette optimisation a permis d’améliorer les temps de traitement et la précision des résultats, démontrant une compréhension pratique des algorithmes adaptés au contexte métier.
 
----
+## Compétence 3 : Administrer des systèmes informatiques communicants complexes
 
-## C2. Optimiser des applications informatiques
+**(UE2.3) :** Installer et configurer un poste de travail
 
-Une partie de mon travail a consisté à analyser l’impact de la migration d’un cluster CDH vers CDP. J’ai étudié les performances des anciens jobs et proposé des ajustements pour améliorer leur efficacité sur la nouvelle infrastructure.
+> J’ai configuré mon environnement de travail sur différents environnements (`bd0`, `bt1`, `perf`), en installant et paramétrant les outils nécessaires (Talend, Hue, Jenkins).
 
-J’ai également retravaillé des jobs liés à la purge RGPD pour les rendre plus rapides et plus fiables, en supprimant les redondances et en optimisant les accès aux bases de données.
+## Compétence 4 : Gérer des données de l’information
 
----
+**(UE2.4) :** Concevoir et mettre en place une base de données à partir d’un cahier des charges client
 
-## C3. Administrer des systèmes informatiques
+> J’ai contribué à la gestion des bases de données Hadoop via Hue, en créant et modifiant des requêtes SQL selon les spécifications. Cela m’a permis de mieux comprendre comment répondre à un cahier des charges précis pour structurer et extraire des données pertinentes dans un environnement Big Data.
 
-Le projet s’appuyait sur plusieurs environnements (bd0, intégration, préproduction, perf), et j’ai appris à les utiliser et à y déployer des jobs de manière sécurisée. J’ai aussi automatisé certaines étapes via Jenkins, notamment l’exécution de traitements en batch.
+## Compétence 5 : Conduire un projet
 
-Les interactions avec les équipes d’administration système (SIO) m’ont permis de mieux comprendre la gestion des ressources, les droits, et les outils d’orchestration internes.
+**(UE2.5) :** Identifier les besoins métiers des clients et des utilisateurs
 
----
+> /a trouver\
 
-## C4. Gérer des données de l’information
+## Compétence 6 : Collaborer au sein d’une équipe informatique
 
-Les pipelines sur lesquels j’ai travaillé traitaient des données sensibles (notamment à caractère personnel). J’ai été sensibilisé aux enjeux de la RGPD et j’ai contribué à fiabiliser les traitements pour éviter toute fuite ou erreur de traitement.
+**(UE2.6) :** Identifier ses aptitudes pour travailler dans une équipe
 
-J’ai utilisé Hue pour requêter et analyser les données, identifier des incohérences et vérifier les résultats des jobs Talend. Ces activités m’ont amené à structurer et sécuriser l’accès à l’information.
-
----
-
-## C5. Conduire un projet
-
-J’ai géré plusieurs sujets en autonomie, avec des deadlines spécifiques. Une part importante de mon travail reposait sur ma capacité à m’organiser, documenter mes actions et rendre compte régulièrement.
-
-Les réunions quotidiennes (daily meetings) m’ont permis d’échanger avec l’équipe, de faire remonter les blocages et de participer à la priorisation des tâches. J’ai également produit des documents internes comme le SAD (spécification) et le DHE (documentation d’exploitation).
-
----
+> Intégré dans une équipe technique, j’ai participé activement aux échanges, remontées de problèmes et partages de solutions. J’ai ainsi pris conscience de mes points forts en communication et en travail collaboratif, tout en développant mes compétences en gestion du temps et coordination.
+![excel](/img/tableau.png)

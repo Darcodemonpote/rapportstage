@@ -7,7 +7,7 @@ module.exports = {
   baseUrl: '/rapportstage/',                 // Le nom du repo avec un slash final
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+    favicon: 'img/lr.ico',
   organizationName: 'Darcodemonpote',        // Ton pseudo GitHub
   projectName: 'rapportstage',                // Nom exact du repo GitHub
 
@@ -33,7 +33,7 @@ module.exports = {
       title: 'Rapport de stage',
       logo: {
         alt: 'Logo',
-        src: 'img/logo.svg',
+          src: 'img/lr.png',
       },
       items: [
         {
@@ -41,12 +41,7 @@ module.exports = {
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Rapport de stage',
-        },
-        {
-          href: 'https://github.com/Darcodemonpote/rapportstage',
-          label: 'GitHub',
-          position: 'right',
-        },
+          },
       ],
     },
     footer: {
@@ -55,15 +50,8 @@ module.exports = {
         {
           title: 'Sommaire',
           items: [
-            { label: 'Introduction', to: '/' },
-            { label: 'Compétences', to: '/competences' },
-          ],
-        },
-        {
-          title: 'Communauté',
-          items: [
-            { label: 'Docusaurus', href: 'https://docusaurus.io' },
-            { label: 'Discord', href: 'https://discordapp.com/invite/docusaurus' },
+              {label: 'Page d\'accueil', to: '/'},
+              {label: 'Introduction', to: '/rapportstage/introduction'},
           ],
         },
         {
