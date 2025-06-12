@@ -3,13 +3,13 @@
 module.exports = {
   title: 'Rapport de stage',
   tagline: 'BUT Info 2A – MAAF Covéa',
-  url: 'https://votre-domaine.com', // Remplace par ton domaine si tu héberges en ligne
-  baseUrl: '/',
+  url: 'https://darcodemonpote.github.io',  // Ton URL GitHub Pages (pseudo.github.io)
+  baseUrl: '/rapportstage/',                 // Le nom du repo avec un slash final
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'votreOrg', // Nom GitHub ou organisation
-  projectName: 'rapportstage',  // Nom du repo
+  organizationName: 'Darcodemonpote',        // Ton pseudo GitHub
+  projectName: 'rapportstage',                // Nom exact du repo GitHub
 
   presets: [
     [
@@ -17,10 +17,10 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          routeBasePath: '/', // ✅ Affiche les docs à la racine
-          editUrl: 'https://github.com/votreOrg/rapportstage/edit/main/',
+          routeBasePath: '/', // Docs à la racine du site
+          editUrl: 'https://github.com/Darcodemonpote/rapportstage/edit/main/',
         },
-        blog: false, // ❌ Désactive le blog
+        blog: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -43,7 +43,7 @@ module.exports = {
           label: 'Rapport de stage',
         },
         {
-          href: 'https://github.com/votreOrg/rapportstage',
+          href: 'https://github.com/Darcodemonpote/rapportstage',
           label: 'GitHub',
           position: 'right',
         },
@@ -55,36 +55,21 @@ module.exports = {
         {
           title: 'Sommaire',
           items: [
-            {
-              label: 'Introduction',
-              to: '/',
-            },
-            {
-              label: 'Compétences',
-              to: '/competences',
-            },
+            { label: 'Introduction', to: '/' },
+            { label: 'Compétences', to: '/competences' },
           ],
         },
         {
           title: 'Communauté',
           items: [
-            {
-              label: 'Docusaurus',
-              href: 'https://docusaurus.io',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
+            { label: 'Docusaurus', href: 'https://docusaurus.io' },
+            { label: 'Discord', href: 'https://discordapp.com/invite/docusaurus' },
           ],
         },
         {
           title: 'Code source',
           items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/votreOrg/rapportstage',
-            },
+            { label: 'GitHub', href: 'https://github.com/Darcodemonpote/rapportstage' },
           ],
         },
       ],
