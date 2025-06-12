@@ -53,13 +53,7 @@ module.exports = {
               {label: 'Page d\'accueil', to: '/'},
               {label: 'Introduction', to: '/rapportstage/introduction'},
           ],
-        },
-        {
-          title: 'Code source',
-          items: [
-            { label: 'GitHub', href: 'https://github.com/Darcodemonpote/rapportstage' },
-          ],
-        },
+        }
       ],
       copyright: `© ${new Date().getFullYear()} Rapport de stage – BUT Info`,
     },
