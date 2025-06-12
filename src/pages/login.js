@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 export default function Login() {
+  const baseUrl = useBaseUrl('/');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (password === 'LestournesolsVG') {
+    if (password === 'lestournesolsVG') {  // change 'monmdp' par ton mot de passe
       localStorage.setItem('auth', 'true');
-      window.location.href = '/rapportstage/';
+      window.location.href = baseUrl;  // redirige vers la page d'accueil
     } else {
-      setError('Mot de passe incorrect');
+      setError('Mauvais mot de passe');
     }
   };
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
+    <div>
       <h1>Connexion</h1>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSubmit}>
         <input
           type="password"
           placeholder="Mot de passe"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ padding: '0.5rem', marginBottom: '1rem' }}
+          onChange={e => setPassword(e.target.value)}
         />
-        <br />
-        <button type="submit" style={{ padding: '0.5rem 1rem' }}>Se connecter</button>
+        <button type="submit">Se connecter</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>

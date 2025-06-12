@@ -1,9 +1,12 @@
 ### Contexte
 
-Dans le cadre de la **migration de la plateforme Big Data de CDH vers CDP**, certains comportements indésirables sont apparus, notamment une erreur sur le **traitement des dates** :\
-Les valeurs qui étaient auparavant exprimées en **CET (UTC+1)** apparaissaient désormais en **UTC**, entraînant des incohérences dans les analyses et les traitements métiers.
 
-Ce décalage de fuseau horaire est dû à la configuration par défaut des composants Talend dans le nouvel environnement. Ce problème, bien que discret, pouvait fausser la logique des calculs temporels (ex. : durées, dates d'échéance, journaux, etc.).
+Dans le cadre de la **migration de la plateforme Big Data de CDH vers CDP**, certains comportements indésirables sont apparus, notamment une erreur sur le **traitement des dates** :
+Les valeurs qui étaient auparavant exprimées en **CET** (Central European Time) apparaissaient désormais en **UTC** (Coordinated Universal Time), entraînant des incohérences dans les analyses et les traitements métiers.
+
+Ce décalage de fuseau horaire est dû à la configuration par défaut des composants Talend dans le nouvel environnement, **notamment parce que les jobs migrés de Talend 7 (avec Impala) vers Talend 8 (avec Kudu) ont hérité du comportement de gestion des dates propre à Kudu, qui stocke les dates en UTC par défaut**.
+
+Ce changement discret mais systématique pouvait fausser la logique des calculs temporels (ex. : durées, dates d'échéance, journaux, etc.).
 
 ### Objectif
 

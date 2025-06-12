@@ -16,50 +16,10 @@ Pour assurer la bonne **conformité** avec les exigences RGPD, il faut donc **re
 
 ### Contraintes techniques
 
-* Réutilisation d'identifiants pour les 3 tables de prodauto (table des contrats, contrats à effet différé et devis)
+* Réutilisation d'identifiants pour les 3 tables de prodauto (table des contrats, contrats à effet différé et devis)/
+  Tant que la resynchronisation avec le Datahub n’a pas eu lieu, le Datahub conserve encore l’ancien contrat non purgé, ce qui fait qu'on peut avoir même identifiant pour plusieurs contrats différents (ancien et nouveau).
 * La manipulation repose sur des **requêtes SQL** avec des jointures et des fonctions analytiques.
 
 ---
 
-### Requête SQL d’exemple /A EXPLIQUER\
-
-```sql
-SELECT 'contrat' AS ctymet,
-       t3.nsc AS nsc,
-       t3.ncnt AS ncnt,
-       CONCAT('31/12/', CAST(CAST(SUBSTR(t3.base_timestamp,1,4) AS INT) - 1 AS STRING)) AS dpasarch,
-       '' AS dapurge,
-       DATE_FORMAT(CURRENT_TIMESTAMP,'yyyy-MM-dd HH:mm:ss') AS date_ingestion
-FROM (
-    SELECT t2.nsc,
-           t2.ncnt,
-           t2.min_dnrdef,
-           t2.max_dnrdef,
-           t2.base_timestamp,
-           ROW_NUMBER() OVER (PARTITION BY t2.nsc, t2.ncnt ORDER BY t2.base_timestamp ASC) AS rn
-    FROM (
-        SELECT j.nsc,
-               j.ncnt,
-               MIN(j.dnrdef) OVER (PARTITION BY j.nsc, j.ncnt) AS min_dnrdef,
-               MAX(j.dnrdef) OVER (PARTITION BY j.nsc, j.ncnt) AS max_dnrdef,
-               MAX(n.dtl__capxtimestamp) OVER (PARTITION BY j.nsc, j.ncnt) AS base_timestamp
-        FROM metcdc_tpacon10_histo j
-        INNER JOIN resynchro_tpacon10 n ON j.nsc = n.nsc AND j.ncnt = n.ncnt
-    ) AS t2
-    WHERE ADD_MONTHS(t2.min_dnrdef, ${delay_reuse}) < t2.max_dnrdef
-) AS t3
-WHERE t3.rn = 1
-UNION ALL
-SELECT 'contrat' AS ctymet,
-       b.nsc AS nsc,
-       b.ncnt AS ncnt,
-       CAST('${date_arch}' AS STRING) AS dpasarch,
-       '' AS dapurge,
-       DATE_FORMAT(CURRENT_TIMESTAMP,'yyyy-MM-dd HH:mm:ss') AS date_ingestion
-FROM metcdc_tpacon10_base b
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM resynchro_tpacon10 i
-    WHERE b.nsc = i.nsc AND b.ncnt = i.ncnt
-);
-```
+**A FINIR Il y aura ici des explications du job tpacon10 et un schéma dans la partie contexte ca là c'est pas clair**

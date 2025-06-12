@@ -1,4 +1,4 @@
-## Présentation de la MAAF et du Contexte de Stage
+## Présentation de Covéa et du Contexte de Stage
 
 ### Le groupe Covéa
 
@@ -16,7 +16,7 @@ En tant que stagiaire, j’ai été intégré progressivement à l’équipe et 
 
 ### Organisation et fonctionnement de l’équipe
 
-L'équipe fonctionne en mode **agile**, avec une organisation rythmée par des réunions régulieres tels que les :
+L'équipe fonctionne en mode **agile light**, avec une organisation rythmée par des réunions régulieres tels que les :
 
 * **Dailys** (lundi, mercredi, vendredi à 9h15) :
 

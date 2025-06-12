@@ -1,33 +1,33 @@
-import React, { useEffect } from 'react';
-import { Redirect } from '@docusaurus/router';
-import Link from '@docusaurus/Link';
+import React, { useEffect, useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 export default function Home() {
-  const isLoggedIn = typeof window !== 'undefined' && localStorage.getItem('auth') === 'true';
+  const baseUrl = useBaseUrl('/'); // "/rapportstage/"
+  const [loggedIn, setLoggedIn] = useState(false);
 
-  if (!isLoggedIn) {
-    return <Redirect to="/rapportstage/login" />;
+  useEffect(() => {
+    const auth = localStorage.getItem('auth');
+    setLoggedIn(auth === 'true');
+  }, []);
+
+  if (!loggedIn) {
+    // Redirige vers la page login avec baseUrl
+    window.location.href = `${baseUrl}login`;
+    return null;
   }
 
   return (
-    <main style={{ padding: '2rem', textAlign: 'center' }}>
+    <div>
       <h1>Bienvenue dans mon rapport de stage</h1>
       <p>Tu es connecté avec succès !</p>
-      <Link
-        to="/rapportstage/introduction"
-        style={{
-          display: 'inline-block',
-          marginTop: '2rem',
-          padding: '1rem 2rem',
-          backgroundColor: '#25c2a0',
-          color: 'white',
-          borderRadius: '8px',
-          textDecoration: 'none',
-          fontWeight: 'bold',
-        }}
-      >
-        Accéder au rapport
-      </Link>
-    </main>
+      {/* Ajoute ici des liens vers tes pages importantes, par exemple : */}
+      <nav>
+        <ul>
+          <li><a href={`${baseUrl}0-introduction`}>Introduction</a></li>
+          <li><a href={`${baseUrl}competences`}>Compétences</a></li>
+          {/* etc. */}
+        </ul>
+      </nav>
+    </div>
   );
 }
