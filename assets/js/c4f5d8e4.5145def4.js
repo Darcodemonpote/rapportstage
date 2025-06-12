@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkmon_wiki=self.webpackChunkmon_wiki||[]).push([[634],{192:(n,i,t)=>{t.r(i),t.d(i,{default:()=>o});t(6540);var u=t(6347),e=t(4848);function o(){return(0,e.jsx)(u.rd,{to:"/docs/0-introduction"})}}}]);
