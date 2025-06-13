@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import OriginalLayout from '@theme-original/Layout';
+import OriginalDocPage from '@theme-original/DocPage';
 
-export default function LayoutWrapper(props) {
+export default function ProtectedDocPage(props) {
     const [authorized, setAuthorized] = useState(null);
 
     useEffect(() => {
@@ -10,15 +10,14 @@ export default function LayoutWrapper(props) {
             const isAuthenticated = localStorage.getItem('auth') === 'true';
 
             if (!isAuthenticated && !isLoginPage) {
-                window.location.replace('/rapportstage/login'); // ✅ Remplace bien selon ton repo
+                window.location.replace('/rapportstage/login'); // adapte à ton baseUrl
             } else {
                 setAuthorized(true);
             }
         }
     }, []);
 
-    if (authorized === null) return null; // ⏳ Affichage bloqué pendant le check
+    if (authorized === null) return null;
 
-    return <OriginalLayout {...props} />;
+    return <OriginalDocPage {...props} />;
 }
-console.log('[LayoutWrapper] Chargé')
