@@ -1,0 +1,224 @@
+import React from 'react';
+import CodeBlock from '@theme/CodeBlock';
+import styles from './resynchro.module.css';
+
+### Contexte
+
+Dans le cadre de la mise en place de la norme RGPD, il y a eu la mise en place d'une purge sur la base de donnée contenant les contrats/devis ajoutés par les utilisateurs (DB2), or la base de donnée du datahub n'a pas subis ces memes mises à jours, et donc les données n'avaient pas été purgés de ce coté.
+Le composant lié aux contrats et devis automobile (**prodauto**) fait partie des composants afféctés par cela.
+
+Pour assurer la bonne **conformité** avec les exigences RGPD, il faut donc **resynchroniser** ces données supprimées en les réintégrant dans le processus de purge, afin qu’elles soient correctement prises en compte.
+
+---
+
+### Objectif
+
+* Récuperer et ingérer /A EXPLIQUER\ un Unload de la base DB2 qui correspont aux données n'ayant pas été purgés.
+* Générer un fichier **delta** qui identifie les données absentes ou non traitées dans la base actuelle, pour une purge complète et fiable.
+
+---
+
+### Contraintes techniques
+
+* Réutilisation d'identifiants pour les 3 tables de prodauto (table des contrats, contrats à effet différé et devis)/
+  Tant que la resynchronisation avec le Datahub n’a pas eu lieu, le Datahub conserve encore l’ancien contrat non purgé, ce qui fait qu'on peut avoir même identifiant pour plusieurs contrats différents (ancien et nouveau).
+* La manipulation repose sur des **requêtes SQL** avec des jointures et des fonctions analytiques.
+
+---
+
+##  Job `contrat_tpacon10` *(dont les '$' ont étés supprimés pour raisons techniques)*
+
+<div className={styles.sideBySide}>
+  <div className={styles.left}>
+    <CodeBlock language="yaml">
+{`
+zone: "ing"
+origine: "maaf"
+cal: "prodauto"
+name: "contrat_tpacon10"
+vars:
+  table-name-source: "tpacon10"
+  directory: "/{env}/ing/maaf/prodauto/rgpd/data_guide_contrat"
+  table-cible: "data_guide_contrat_incoming"
+  flux: "resynchro"
+  date_arch: "31/12/2024"
+  delay_reuse: "36"
+
+stages:
+  - stage: "suppression data_guide"
+    type: "CLEAN_DIR_HDFS"
+    condition: "modePattern==\"prepare\""
+    params:
+      directories:
+        - "{directory}"
+        - "{directory}/staging"
+        - "{directory}/stagingArchives"
+        - "{directory}/incoming"
+        - "{directory}/reconcile"
+        - "{directory}/base"
+        - "{directory}/histo"
+  - stage: "multi_data_prep"
+    type: "MULTI_DATA_PREP"
+    condition: "modePattern==\"prepare\""
+    params:
+      sources:
+        - name: "resynchro_tpacon10"
+          type: table
+          table-name: "{flux}_{table-name-source}"
+          schema-file: "schema/metcdc/tpacon10.yaml"
+          directory: "/{env}/ing/maaf/prodauto/{flux}/tpacon10"
+        - name: "metcdc_tpacon10_base"
+          type: table
+          table-name: "metcdc_{table-name-source}_base"
+          schema-file: "schema/metcdc/tpacon10.yaml"
+          directory: "/{env}/ing/maaf/prodauto/metcdc/tpacon10/base"
+        - name: "metcdc_tpacon10_histo"
+          type: table
+          table-name: "metcdc_{table-name-source}_histo"
+          schema-file: "schema/metcdc/tpacon10.yaml"
+          directory: "/{env}/ing/maaf/prodauto/metcdc/tpacon10/histo"
+      transformations:
+        - name: "data_guide_contrat_incoming"
+          type: parquet
+          base: "/{env}/ing/maaf/prodauto/rgpd/data_guide_contrat/incoming"
+          directory: "/{env}/ing/maaf/prodauto/rgpd/data_guide_contrat/incoming"
+          schema-file: "schema/RGPD/data_guide_contrat_rgpd_incoming.yaml"
+          table-name: "{table-cible}"
+          query: "
+                  SELECT 'contrat'                                                                                 AS ctymet,
+                         t3.nsc                                                                                    AS nsc,
+                         t3.ncnt                                                                                   AS ncnt,
+                                Concat( '31/12/', Cast(Cast(Substr(t3.base_timestamp,1,4) AS INT) - 1 AS STRING) ) AS dpasarch,
+                         ''                                                                                        AS dapurge,
+                         date_format(CURRENT_TIMESTAMP,'yyyy-MM-dd HH:mm:ss')                                      AS date_ingestion
+                  FROM   (
+                                  SELECT   t2.nsc,
+                                           t2.ncnt,
+                                           t2.min_dnrdef,
+                                           t2.max_dnrdef,
+                                           t2.base_timestamp,
+                                           Row_number()
+                                             OVER (
+                                               partition BY t2.nsc, t2.ncnt
+                                               ORDER BY t2.base_timestamp ASC
+                                               ) AS rn
+                                  FROM     (
+                                                  SELECT     j.nsc,
+                                                              j.ncnt,
+                                                              Min(j.dnrdef) OVER (partition BY j.nsc, j.ncnt)             AS min_dnrdef,
+                                                              Max(j.dnrdef) OVER (partition BY j.nsc, j.ncnt)             AS max_dnrdef,
+                                                              MAX(n.dtl__capxtimestamp) OVER (partition BY j.nsc, j.ncnt) AS base_timestamp
+                                                  FROM       metcdc_tpacon10_histo j
+                                                  INNER JOIN resynchro_tpacon10 n
+                                                  ON         j.nsc = n.nsc
+                                                  AND        j.ncnt = n.ncnt ) AS t2
+                                  WHERE    add_months(t2.min_dnrdef, {delay_reuse}) < t2.max_dnrdef ) AS t3
+                  WHERE  t3.rn = 1
+                  UNION ALL
+                  SELECT 'contrat'                                             AS ctymet,
+                         b.nsc                                                 AS nsc,
+                         b.ncnt                                                AS ncnt,
+                         cast('{date_arch}' AS string)                        AS dpasarch,
+                         ''                                                    AS dapurge,
+                         date_format(CURRENT_TIMESTAMP,'yyyy-MM-dd HH:mm:ss')  AS date_ingestion
+                  FROM   metcdc_tpacon10_base b
+                  WHERE  NOT EXISTS
+                         (
+                                SELECT 1
+                                FROM   resynchro_tpacon10 i
+                                WHERE  b.nsc = i.nsc
+                                AND    b.ncnt = i.ncnt
+                         )"
+`}
+    </CodeBlock>
+  </div>
+  <div className={styles.right}>
+  <h2>Explication du job <code>contrat_tpacon10</code></h2>
+
+  <p>
+    Le job <code>contrat_tpacon10</code> a été mis en place pour assurer la
+    <strong> resynchronisation des données de contrats automobiles </strong>
+    liées au composant prodauto dans le cadre de la mise en conformité RGPD.
+    Il vise à réintégrer dans le processus de purge les contrats qui avaient été supprimés
+    de la base <strong>DB2</strong>, mais qui sont toujours présents dans le <strong>Datahub</strong>.
+  </p>
+
+  <h3>Fonctionnement général</h3>
+  <p>
+    Ce job se base sur une <strong>analyse croisée</strong> entre l’unload issu de DB2 (<code>resynchro_tpacon10</code>)
+    et les historiques/base existants du Datahub (<code>metcdc_tpacon10_histo</code> et <code>metcdc_tpacon10_base</code>).
+    Il est structuré en plusieurs étapes.
+  </p>
+
+  <h3>Étape 1 – Nettoyage des répertoires HDFS</h3>
+  <p>
+    Avant tout traitement, les répertoires de travail liés à la table <code>data_guide_contrat</code> sont nettoyés :
+  </p>
+  <ul>
+    <li>Répertoires <code>staging</code>, <code>incoming</code>, <code>reconcile</code>, <code>base</code>, <code>histo</code>, etc...</li>
+    <li>Évite les doublons ou conflits issus d’un traitement précédent.</li>
+  </ul>
+
+  <h3>Étape 2 – Préparation des données (stage <code>multi_data_prep</code>)</h3>
+  <p>Cette étape charge les différentes sources nécessaires à la resynchronisation :</p>
+
+  <h4>Sources utilisées</h4>
+  <ul>
+    <li><code>resynchro_tpacon10</code> : dump de DB2 contenant les contrats censés avoir été purgés</li>
+    <li><code>metcdc_tpacon10_base</code> : état actuel des contrats dans le Datahub (base)</li>
+    <li><code>metcdc_tpacon10_histo</code> : historique des modifications sur ces contrats dans le Datahub</li>
+  </ul>
+
+  <p><strong>Objectif :</strong> Comparer ces sources pour identifier deux cas distincts.</p>
+
+  <h3>Transformation logique – Génération du fichier <code>data_guide_contrat_incoming</code></h3>
+  <p>
+    La logique de transformation SQL permet de générer le fichier <code>data_guide_contrat_incoming</code>,
+    qui contient les contrats à intégrer dans le processus de purge.
+  </p>
+
+  <h4>Deux types de cas sont extraits :</h4>
+  <ol>
+    <li>
+      <strong>Cas 1 – Contrats réutilisés</strong> (même identifiant, contrat différent)<br />
+      Identifiés par une différence entre les dates de référence (<code>dnrdef</code>) min/max
+      et un décalage supérieur au délai (<code>delay_reuse</code>).<br />
+      On sélectionne le premier enregistrement chronologique (<code>ROW_NUMBER() = 1</code>) pour chaque identifiant.
+    </li>
+    <li>
+      <strong>Cas 2 – Contrats inexistants dans DB2</strong> (non purgés)<br />
+      Contrats encore présents dans le Datahub, mais absents du dump.<br />
+      Générés via un <code>NOT EXISTS</code> entre la base <code>metcdc</code> et le dump <code>resynchro</code>.
+    </li>
+  </ol>
+
+  <p>Chaque ligne du fichier delta est enrichie avec les champs suivants :</p>
+  <ul>
+    <li><code>dpasarch</code> : date cible de purge (souvent 31/12/année précédente)</li>
+    <li><code>dapurge</code> : champ vide, complété lors de la purge réelle</li>
+    <li><code>date_ingestion</code> : horodatage du job</li>
+  </ul>
+
+  <h3>Résultat attendu</h3>
+  <ul>
+    <li>Les contrats absents ou mal purgés sont correctement identifiés</li>
+    <li>Un fichier Parquet est généré dans le répertoire <code>incoming</code>, prêt à être intégré dans la chaîne de purge RGPD</li>
+  </ul>
+
+  <h3>Liens avec les contraintes RGPD</h3>
+  <p>
+    Ce job assure une traçabilité complète des contrats à purger et garantit que les éventuelles
+    réutilisations d'identifiants n'interfèrent pas avec les exigences RGPD.
+  </p>
+  <ul>
+    <li>Les données personnelles sont supprimées dans tous les systèmes concernés</li>
+    <li>Les fichiers de purge sont conformes et justifiables en cas d’audit RGPD</li>
+  </ul>
+</div>
+</div>
+
+---
+
+### 🗺️ Schéma de purge
+
+![schema](/img/schema.png)
